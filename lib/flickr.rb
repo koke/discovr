@@ -341,7 +341,7 @@ class Flickr
     # Returns the URL for the photo page (default or any specified size)
     def url(size='Medium')
       if size=='Medium'
-        "http://flickr.com/photos/#{owner.username}/#{@id}"
+        "#{owner.photos_url}#{@id}"
       else
         sizes(size)['url']
       end
@@ -349,7 +349,24 @@ class Flickr
 
     # Returns the URL for the image (default or any specified size)
     def source(size='Medium')
-      sizes(size)['source']
+      size_map = {
+        'Square'    => '_s',
+        'Thumbnail' => '_t',
+        'Small'     => '_m',
+        'Medium'    => '',
+        'Large'     => '_b',
+        'Original'  => '_o'
+      }
+      s = size_map[size]
+
+      return sizes(size)['source'] if @farm.nil? or @server.nil? or @secret.nil? or s.nil?
+      if size == 'Original'
+        return sizes(size)['source'] if @originalsecret.nil? or @originalformat.nil?
+
+        return "http://farm#{@farm}.static.flickr.com/#{@server}/#{@id}_#{@originalsecret}_o.#{@originalformat}"
+      end
+      
+      "http://farm#{@farm}.static.flickr.com/#{@server}/#{@id}_#{@secret}#{s}.jpg"
     end
 
     # Returns the photo file data itself, in any specified size. Example: File.open(photo.title, 'w') { |f| f.puts photo.file }
