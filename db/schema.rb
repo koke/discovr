@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091107171618) do
+ActiveRecord::Schema.define(:version => 20091108201957) do
 
   create_table "favorites", :id => false, :force => true do |t|
     t.integer  "picture_id"
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(:version => 20091107171618) do
     t.string   "secret"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "photo_url"
   end
 
   add_index "pictures", ["photo_id"], :name => "index_pictures_on_photo_id", :unique => true
