@@ -7,6 +7,12 @@ I'm releasing it to see if someone comes with a better idea, so sorry about dirt
 
 Any improvement suggestions will be welcome
 
+== Where to look at
+
+Juicy code
+
+* lib/flickr.rb[http://github.com/koke/discovr/blob/master/lib/flickr.rb]
+
 == Try it
 
 1. Download it: <tt>git clone git://github.com/koke/discovr.git</tt>
