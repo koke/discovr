@@ -10,13 +10,13 @@ Any improvement suggestions will be welcome
 == Try it
 
 1. Download it: <tt>git clone git://github.com/koke/discovr.git</tt>
-1. Edit <tt>config/initializers/flickr_api.rb</tt> and add your flickr API key and secret. You can get them at http://www.flickr.com/services/api/keys/
+1. Edit <tt>config/initializers/flickr_api.rb</tt> and add your flickr API key and secret. You can get them at http://www.flickr.com/services/api/keys
 1. Create your database and edit <tt>config/database.yml</tt> accordingly.
 1. Launch the console and fetch data. This can take a while (~25 minutes for me) 
    
    <tt>similar = User.lookup("koke").similar_pictures</tt>
 
-1. Launch your server (<tt>script/server</tt>) and visit http://localhost:3000/discovr/. This can also take a while (~4 minutes first time, ~10s otherwise) and enjoy
+1. Launch your server (<tt>script/server</tt>) and visit http://localhost:3000/discovr. This can also take a while (~4 minutes first time, ~10s otherwise) and enjoy
 
 == License
 
