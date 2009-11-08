@@ -9,9 +9,13 @@ Any improvement suggestions will be welcome
 
 == Where to look at
 
-Juicy code
+Where is the actual code? These files:
 
-* lib/flickr.rb[http://github.com/koke/discovr/blob/master/lib/flickr.rb]
+* lib/flickr.rb[http://github.com/koke/discovr/blob/master/lib/flickr.rb] (based in http://rubyforge.org/projects/flickr)
+* app/models/picture.rb[http://github.com/koke/discovr/blob/master/app/models/picture.rb]
+* app/models/user.rb[http://github.com/koke/discovr/blob/master/app/models/user.rb]
+* app/controllers/discovr_controller.rb[http://github.com/koke/discovr/blob/master/app/controllers/discovr_controller.rb]
+* app/views/discovr/index.html.erb[http://github.com/koke/discovr/blob/master/app/views/discovr/index.html.erb]
 
 == Try it
 
