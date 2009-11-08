@@ -56,7 +56,7 @@ class Flickr
   # Replace this API key with your own (see http://www.flickr.com/services/api/misc.api_keys.html)
   def initialize(api_key=nil, email=nil, password=nil)
     @api_key = api_key
-    @host = 'http://flickr.com'
+    @host = 'http://api.flickr.com'
     @api = '/services/rest'
     login(email, password) if email and password
   end
