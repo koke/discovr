@@ -1,0 +1,41 @@
+= discovr
+
+This is some experimental code to discover interesting flickr photos based on your favorites.
+The concept works but it takes way too much time and API requests to fetch and process data.
+
+I'm releasing it to see if someone comes with a better idea, so sorry about dirty code. This is just the result of a weekend playing with flickr API.
+
+Any improvement suggestions will be welcome
+
+== Try it
+
+1. Download it: <tt>git clone git://github.com/koke/discovr.git</tt>
+1. Edit <tt>config/initializers/flickr_api.rb</tt> and add your flickr API key and secret. You can get them at http://www.flickr.com/services/api/keys/
+1. Create your database and edit <tt>config/database.yml</tt> accordingly.
+1. Launch the console and fetch data. This can take a while (~25 minutes for me) 
+   
+   <tt>similar = User.lookup("koke").similar_pictures</tt>
+
+1. Launch your server (<tt>script/server</tt>) and visit http://localhost:3000/discovr/. This can also take a while (~4 minutes first time, ~10s otherwise) and enjoy
+
+== License
+
+Copyright (c) 2009 Jorge Bernal <koke@amedias.org>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
