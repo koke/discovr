@@ -55,6 +55,8 @@ class User < ActiveRecord::Base
   end
   
   def self.lookup(name_or_email)
+    user = find(name_or_email.to_i)
+    return user if user
     user = find_by_username(name_or_email)
     return user if user
     
