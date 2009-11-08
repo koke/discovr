@@ -1,0 +1,2 @@
+module DiscovrHelper
+end
