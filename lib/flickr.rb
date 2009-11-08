@@ -226,9 +226,27 @@ class Flickr
     end
     
     # Implements flickr.favorites.getPublicList and flickr.favorites.getList
-    def favorites
-      @client.favorites_getPublicList('user_id'=>@id)['photos']['photo'].collect { |photo| Photo.new(photo['id'], @api_key) }
-      #or
+    def favorites(min_fave_date=nil)
+      per_page = '50'
+      result = @client.favorites_getPublicList('user_id'=>@id, 'page'=>'1', 'per_page'=>per_page, 'min_fave_date'=>min_fave_date.to_i.to_s)
+      photos = result['photos']['photo']
+      
+      return [] unless photos
+
+      photos = [photos] unless photos.kind_of?(Array)
+      faves = photos.to_a.reject{|photo| photo['id'].blank?}.collect { |photo| Photo.new(photo['id'], @api_key, photo) };
+      # if result['photos']['pages'].to_i > 1
+      #   puts result['photos']['pages'].to_i
+      #   (2..result['photos']['pages'].to_i).each do |page|
+      #     result = @client.favorites_getPublicList('user_id'=>@id, 'page'=>page.to_s, 'per_page'=>per_page,'min_fave_date'=>min_fave_date.to_i.to_s)
+      #     photos = result['photos']['photo']
+      #     photos = [photos] unless photos.kind_of?(Array)
+      #     
+      #     faves += photos.reject{|photo| photo['id'].blank?}.collect { |photo| Photo.new(photo['id'], @api_key, photo) }
+      #   end
+      # end
+      
+      faves
     end
     
     # Implements flickr.photosets.getList
