@@ -22,6 +22,7 @@ Where is the actual code? These files:
 1. Download it: <tt>git clone git://github.com/koke/discovr.git</tt>
 1. Edit <tt>config/initializers/flickr_api.rb</tt> and add your flickr API key and secret. You can get them at http://www.flickr.com/services/api/keys
 1. Create your database and edit <tt>config/database.yml</tt> accordingly.
+1. Run <tt>rake db:migrate</tt> to create the tables and views
 1. Launch the console and fetch data. This can take a while (~25 minutes for me) 
    
    <tt>similar = User.lookup("koke").similar_pictures</tt>
