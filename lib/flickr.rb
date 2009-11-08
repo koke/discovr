@@ -107,7 +107,7 @@ class Flickr
     # {"photos => {"photo" => [{...}]}"} 
     collection = photos['photos']['photo']
     collection = [collection] if collection.is_a? Hash
-    collection.collect { |photo| Photo.new(photo['id'], @api_key) }
+    collection.collect { |photo| Photo.new(photo['id'], @api_key, photo) }
   end
 
   # Gets public photos with a given tag
@@ -119,7 +119,7 @@ class Flickr
   def users(lookup=nil)
     if(lookup)
       user = people_findByEmail('find_email'=>lookup)['user'] rescue people_findByUsername('username'=>lookup)['user']
-      return User.new(user['nsid'], @api_key)
+      return User.new(user['nsid'], user['username'], nil, nil, @api_key)
     else
       return people_getOnlineList['online']['user'].collect { |person| User.new(person['nsid'], @api_key) }
     end
@@ -173,9 +173,9 @@ class Flickr
       @username = username
       @email = email
       @password = password
+      @api_key = api_key
       @client = Flickr.new @api_key
       @client.login(email, password) if email and password
-      @api_key = api_key
     end
 
     def username
@@ -210,7 +210,7 @@ class Flickr
     
     # Implements flickr.people.getPublicPhotos
     def photos
-      @client.people_getPublicPhotos('user_id'=>@id)['photos']['photo'].collect { |photo| Photo.new(photo['id'], @api_key) }
+      @client.people_getPublicPhotos('user_id'=>@id)['photos']['photo'].collect { |photo| Photo.new(photo['id'], @api_key, photo) }
       # what about non-public photos?
     end
 
@@ -243,9 +243,9 @@ class Flickr
 
     # Implements flickr.photos.getContactsPublicPhotos and flickr.photos.getContactsPhotos
     def contactsPhotos
-      @client.photos_getContactsPublicPhotos('user_id'=>@id)['photos']['photo'].collect { |photo| Photo.new(photo['id'], @api_key) }
+      @client.photos_getContactsPublicPhotos('user_id'=>@id)['photos']['photo'].collect { |photo| Photo.new(photo['id'], @api_key, photo) }
       # or
-      #@client.photos_getContactsPhotos['photos']['photo'].collect { |photo| Photo.new(photo['id'], @api_key) }
+      #@client.photos_getContactsPhotos['photos']['photo'].collect { |photo| Photo.new(photo['id'], @api_key, photo) }
     end
     
     def to_s
@@ -272,12 +272,38 @@ class Flickr
 
   class Photo
 
-    attr_reader :id, :client
+    attr_reader :id, :client, :server, :secret, :farm
 
-    def initialize(id=nil, api_key=nil)
+    def initialize(id=nil, api_key=nil, params = {})
       @id = id
       @api_key = api_key
       @client = Flickr.new @api_key
+      @farm = params['farm']
+      @server = params['server']
+      @secret = params['secret']
+      @originalsecret = params['originalsecret']
+      @originalformat = params['originalformat']
+      @title = params['title']
+    end
+    
+    def favorites
+      per_page = '50'
+      result = @client.photos_getFavorites('photo_id'=>@id, 'page'=>'1', 'per_page'=>per_page)
+      users = result['photo']['person']
+      
+      return [] unless users
+
+      users = [users] unless users.kind_of?(Array)
+      faves = users.collect { |user| User.new(user['nsid'], user['username'], nil, nil, @api_key) }
+      # if result['photo']['pages'].to_i > 1
+      #   puts result['photo']['pages'].to_i
+      #   (2..result['photo']['pages'].to_i).each do |page|
+      #     result = @client.photos_getFavorites('photo_id'=>@id, 'page'=>page.to_s, 'per_page'=>per_page)
+      #     faves += result['photo']['person'].collect { |user| User.new(user['nsid'], user['username'], nil, nil, @api_key) }          
+      #   end
+      # end
+      
+      faves
     end
     
     def title
@@ -339,8 +365,8 @@ class Flickr
     # Implements flickr.photos.getContext
     def context
       context = @client.photos_getContext('photo_id'=>@id)
-      @previousPhoto = Photo.new(context['prevphoto']['id'], @api_key)
-      @nextPhoto = Photo.new(context['nextphoto']['id'], @api_key)
+      @previousPhoto = Photo.new(context['prevphoto']['id'], @api_key, context['prevphoto'])
+      @nextPhoto = Photo.new(context['nextphoto']['id'], @api_key, context['nextphoto'])
       return [@previousPhoto, @nextPhoto]
     end
 
@@ -424,7 +450,7 @@ class Flickr
       def getInfo
         info = @client.photos_getInfo('photo_id'=>@id)['photo']
         @title = info['title']
-        @owner = User.new(info['owner']['nsid'], @api_key)
+        @owner = User.new(info['owner']['nsid'], nil, nil, nil, @api_key)
         @server = info['server']
         @isfavorite = info['isfavorite']
         @license = info['license']
