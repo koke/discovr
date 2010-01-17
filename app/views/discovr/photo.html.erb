@@ -1,0 +1,22 @@
+<div id="bigpicture">
+  <%= link_to(image_tag(@photo.source('Small')), @photo.url, :target => "_blank") %>
+</div>
+<div class="userlist">
+  <div class="user similar">
+    <%= link_to(image_tag("/images/network.jpg", :alt => "Similar", :class => "avatar"), {:action => "similar", :id => @photo.id}, :title => "Similar pictures") %>
+  </div>
+  <% @users.each do |user| %>
+  <div class="user">
+    <%= link_to_remote(
+            image_tag(user.avatar, :alt => user.username, :class => "avatar"),
+            :url => {:action => "user", :id => user.nsid},
+            :loading => "setLoading('#{user.safe_nsid}')",
+            :complete => "endLoading('#{user.safe_nsid}')",
+            :html => {:title => user.username, :class => (@selected == user) ? "selected" : "", :id => "#{user.safe_nsid}"}
+            ) %>
+  </div>
+  <% end %>
+</div>
+<div class="favorites" id="favorites">
+<%= render :partial => 'user_favorites', :locals => {:photos => @selected.favorites} %>
+</div>

@@ -1,7 +1,8 @@
-<%= @explored.inspect %>
-
-<% if @token %>
-<pre>
-<%= @token.inspect %>
-</pre>
+<% if @user %>
+<div class="favorites">
+  <% @user.favorites.each do |photo| %>
+  <%= link_to(image_tag(photo.thumbnail, :alt => "", :class => "thumb"), :action => "photo", :id => photo.id) %>
+  <% end %>
+</div>
 <% end %>
+<%# @explored.inspect %>

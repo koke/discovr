@@ -1,0 +1,7 @@
+page.replace_html 'favorites', :partial => 'user_favorites', :locals => {:photos => @photos}
+page.replace_html 'history', :partial => 'history'
+page << "
+$$('.user a').each(function(user) {
+  user.className = '';
+});
+$('#{@user.safe_nsid}').className = 'selected';"

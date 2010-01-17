@@ -3,8 +3,19 @@ body{font:13px/1.5 Helvetica,Arial,'Liberation Sans',FreeSans,sans-serif}a:focus
 body { background: #000; color: #fff; }
 img { border: 0; }
 a, img { margin: 0; padding: 0; color: #fff; text-decoration: none; }
-#bigpicture { text-align: center; width: 100%; padding-bottom: 20px; background: #000; float: left; width: 520px; position: fixed;}
+#bigpicture { text-align: center; padding: 10px; background: #000; float: left; width: 240px; }
 #bigpicture #thelink { margin-top: 10px; }
-#pictureshow { margin-left: 520px; float: left; width: auto; }
+#pictureshow { margin: 10px; margin-left: 260px; float: left; width: auto; }
 #pictureshow a.selected img { border: 2px solid #f0f0f0;}
+.userlist { margin: 10px; float: left; width: 52px; }
+.userlist .selected .avatar { border-color: #ccf;}
+.userlist .loading { background: url(/images/loading.gif) no-repeat top left; width: 48px; height: 48px; position: absolute; z-index: 10; margin: 3px;}
+.favorites { display: block; float: left; margin: 10px; width: 640px;}
+.favorites a {margin-left: 5px;}
 #thetitle { display: block; }
+.avatar, .thumb { width: 75px; height: 75px; background: url(/images/thumb.jpg) no-repeat center center; border: 3px solid #000;}
+.avatar { width: 48px; height: 48px;}
+.avatar:hover, .thumb:hover { border-color: #ffc;}
+#history {height: 75px; clear: both; border: 1px dashed #ccc; padding: 10px; font-size: 10px; width: 960px; }
+#history .item {width: 75px; height: 75px; float: left; text-align: center; margin-right: 5px;}
+#history .item img { display: block; margin: 0 auto;}

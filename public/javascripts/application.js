@@ -22,3 +22,17 @@ function picture_out (image, photo_url) {
 		image.moved = false;
 	}
 }
+
+function setLoading (nsid) {
+	var user = $(nsid);
+	
+	user.insert({
+		top: "<div class='loading'></div>"
+	});
+}
+
+function endLoading(nsid) {
+	$$('#' + nsid + ' .loading').each(function(l) {
+		l.remove();
+	});
+}

@@ -1,0 +1,14 @@
+	<div class="wrap">
+	<% @history.get.each do |item| %>
+			<% if item.is_a?(Flickr::Photo) %>
+			<div class="item photo">
+			<%= link_to(image_tag(item.thumbnail, :alt => "", :class => "thumb"), :action => "photo", :id => item.id) %>
+			</div>
+			<% elsif item.is_a?(Flickr::User) %>
+			<div class="item user">
+			<%= link_to(image_tag(item.avatar, :alt => "", :class => "avatar"), :action => "user", :id => item.nsid) %>
+			<%= ellipsize item.username %>
+			</div>
+			<% end %>
+	<% end %>
+	</div>
