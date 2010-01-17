@@ -1,3 +1,18 @@
+<div id="bigpicture">
+  <a id='thelink' href="<%= @pictures.first.url %>" target="_blank">
+    <%= image_tag(@pictures.first.source('Medium'), :id => 'thepicture') %>
+    <span id='thetitle'><%= @pictures.first.title %></span>
+  </a>
+</div>
+<div id="pictureshow">
 <% @pictures.each do |picture| %>
-<%= link_to image_tag(picture.source('Square'), :alt => picture.title), picture.url %>
+<%= link_to image_tag(picture.source('Square'), :style => 'position: relative', :alt => picture.title), 
+            picture.url, 
+            :onclick => "$('thepicture').src = '#{picture.source}';
+                          $('thelink').href = '#{picture.url}';
+                          $('thetitle').innerHTML = '#{escape_javascript(picture.title)}';
+                          $$('#pictureshow a').each(function(item) {item.className=''});
+                          this.className = 'selected';
+                          return false;" %>
 <% end %>
+</div>
