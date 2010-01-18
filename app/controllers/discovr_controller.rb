@@ -3,7 +3,15 @@ class DiscovrController < ApplicationController
     # @explored = @flickr.interestingness_getList
     if @nsid
       @user = @flickr.user(@nsid)
-      @history.add(@user)
+      add_history(@user)
+    else
+      @photos = HistoryCache.recent_photos.map do |h|
+        @flickr.photo(h.cached_id)
+      end
+      if @photos.size < 80
+        limit = 100 - @photos.size
+        @photos += @flickr.explored(limit)
+      end
     end
 
     if params[:frob]
@@ -18,11 +26,11 @@ class DiscovrController < ApplicationController
   
   def photo
     @photo = @flickr.photo(params[:id])
-    @users = @photo.favorites
+    @users = @photo.favorites(true)
     @selected = @users.first
     @similar = @photo.similar(@selected.nsid)
     @next = @users.second
-    @history.add(@photo)
+    add_history(@photo)
   end
   
   def similar
@@ -36,7 +44,7 @@ class DiscovrController < ApplicationController
       @photos = @photo.similar(@users.first.nsid)
     end
     respond_to do |wants|
-      wants.html { @history.add(@photo) }
+      wants.html { add_history(@photo) }
       wants.js
     end
   end
@@ -44,7 +52,7 @@ class DiscovrController < ApplicationController
   def user
     @user = @flickr.user(params[:id])
     @photos = @user.favorites
-    @history.add(@user)
+    add_history(@user)
     
     respond_to do |wants|
       wants.html

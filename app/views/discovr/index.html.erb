@@ -1,8 +1,10 @@
 <% if @user %>
-<div class="favorites">
-  <% @user.favorites.each do |photo| %>
-  <%= link_to(image_tag(photo.thumbnail, :alt => "", :class => "thumb"), :action => "photo", :id => photo.id) %>
-  <% end %>
+<div class="user favorites" id="favorites">
+<%= render :partial => 'user_favorites', :locals => {:photos => @user.favorites} %>
+</div>
+<% else %>
+<div class="user favorites" id="favorites">
+<%= render :partial => 'user_favorites', :locals => {:photos => @photos} %>
 </div>
 <% end %>
 <%# @explored.inspect %>

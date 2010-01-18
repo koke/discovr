@@ -9,19 +9,22 @@
   <%= stylesheet_link_tag 'common' %>
 </head>
 <body>
-	<div id="topbar">
-		<h1><a href="/">discovr</a></h1>
-		<% if @userdata %>
-		<div id="loggedas">Logged in as <%= @userdata["username"] %></div>
-		<% else %>
-		<%= link_to "Login", @auth_link, :class => "login_link" %>
-		<% end %>
-		<a class="clearhistory" href="?clearhistory">Clear history</a>
+	<div id="main">
+		<div id="topbar">
+			<h1><a href="/">discovr</a></h1>
+			<% if @userdata %>
+			<div class="loggedas">Logged in as <%= @userdata["username"] %></div>
+			<% else %>
+			<%= link_to "Login", @auth_link, :class => "login_link" %>
+			<% end %>
+			<a class="clearhistory" href="?clearhistory">Clear history</a>
+		</div>
+		<div id="history">
+			<%= render :partial => 'discovr/history' %>		
+		</div>
+		<div id="content">
+			<%= yield %>
+		</div>
 	</div>
-	<div id="history">
-		<%= render :partial => 'discovr/history' %>		
-	</div>
-	</div>
-  <%= yield %>
 </body>
 </html>

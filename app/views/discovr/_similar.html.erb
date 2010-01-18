@@ -1,4 +1,4 @@
 <% similars.each do |similar| %>
-  <% photo = @flickr.photo(similar.similar_id) %>
+  <% photo = @flickr.photo_from_cache(similar.similar) || @flickr.photo(similar.similar_id) %>
   <%= render :partial => 'photo_thumb', :locals => { :photo => photo } %>
 <% end %>

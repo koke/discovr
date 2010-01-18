@@ -25,8 +25,12 @@
             :url => {:action => "user", :id => user.nsid},
             :loading => "setLoading('#{user.safe_nsid}')",
             :complete => "endLoading('#{user.safe_nsid}')",
-            :html => {:title => user.username, :id => "#{user.safe_nsid}", :class => class_name}
-            ) %>
+            :html => {
+              :href => url_for(:action => "user", :id => user.nsid),
+              :title => user.username, 
+              :id => "#{user.safe_nsid}", 
+              :class => class_name
+            }) %>
   </div>
   <% end %>
 </div>

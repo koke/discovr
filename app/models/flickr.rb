@@ -76,9 +76,11 @@ class Flickr
     request(method_id.id2name.gsub(/_/, '.'), params)
   end
   
-  # TODO
-  def explored
-    
+  def explored(limit=100)
+    photos = interestingness_getList('per_page'=>limit.to_s)
+    photos['photos']['photo'].map do |photo|
+      Photo.new(self, photo['id'], photo)
+    end
   end
   
   def user(lookup)
@@ -95,16 +97,20 @@ class Flickr
     end
   end
   
+  def photo_from_cache(photo)
+    options = {
+      'farm' => photo.farm,
+      'server' => photo.server,
+      'secret' => photo.secret,
+    }
+    Photo.new(self, photo.photo_id, options)
+  end
+  
   def photo(photo_id)
     photo = PhotoCache.find_by_photo_id(photo_id)
     if photo
-      options = {
-        'farm' => photo.farm,
-        'server' => photo.server,
-        'secret' => photo.secret,
-      }
-      return Photo.new(self, photo_id, options)
-    end
+      return photo_from_cache(photo)
+    end    
     
     photo = photos_getInfo('photo_id'=>photo_id)["photo"]
     Photo.new(self, photo_id, photo)
@@ -168,13 +174,21 @@ class Flickr
       source('Square')
     end
     
-    def favorites
-      faves = Favorite.find(:all, :conditions => ["photo_id = ?", @id])
-      if faves
-        return faves.map do |f|
-          User.new(@flickr, f.nsid, f.user.username)
+    def favorites(force=false)
+      unless force
+        faves = Favorite.find(:all, :conditions => ["photo_id = ?", @id])
+        if !faves.empty?
+          return faves.map do |f|
+            if f.user.nil?
+              u = @flickr.user(f.nsid)
+              f.user = UserCache.create_if_not_exists(:nsid => f.nsid, :username => u.username)
+            end
+          
+            User.new(@flickr, f.nsid, f.user.username)
+          end
         end
       end
+      
       result = @flickr.photos_getFavorites('photo_id'=>@id)
       users = result['photo']['person']
       
@@ -194,7 +208,7 @@ class Flickr
     end
     
     def similar(nsid)
-      similar = Similar.find(:all, :conditions => ["photo_id = ? AND proxy_user = ?", @id, nsid])
+      similar = Similar.find(:all, :conditions => ["photo_id = ? AND proxy_user = ?", @id, nsid], :include => :photo)
       if similar.empty?
         user = @flickr.user(nsid)
         faves = user.favorites

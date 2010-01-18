@@ -3,6 +3,7 @@ body{font:13px/1.5 Helvetica,Arial,'Liberation Sans',FreeSans,sans-serif}a:focus
 body { background: #000; color: #fff; }
 img { border: 0; }
 a, img { margin: 0; padding: 0; color: #fff; text-decoration: none; }
+#main { width: 1000px; margin: 10px auto;}
 #bigpicture { text-align: center; padding: 10px; background: #000; float: left; width: 240px; }
 #bigpicture #thelink { margin-top: 10px; }
 #pictureshow { margin: 10px; margin-left: 260px; float: left; width: auto; }
@@ -14,6 +15,7 @@ a, img { margin: 0; padding: 0; color: #fff; text-decoration: none; }
 .userlist .failure .avatar { border-color: #533;}
 .userlist .indicator { background: url(/images/loading.gif) no-repeat top left; width: 48px; height: 48px; position: absolute; z-index: 10; margin: 3px;}
 .favorites { display: block; float: left; margin: 10px; width: 640px;}
+.user.favorites { margin: 10px 0; width: 1000px;}
 .favorites a {margin-left: 5px;}
 #thetitle { display: block; }
 .avatar, .thumb { width: 75px; height: 75px; background: url(/images/thumb.jpg) no-repeat center center; border: 3px solid #000;}
@@ -22,3 +24,6 @@ a, img { margin: 0; padding: 0; color: #fff; text-decoration: none; }
 #history {height: 75px; clear: both; border: 1px dashed #ccc; padding: 10px; font-size: 10px; width: 960px; }
 #history .item {width: 75px; height: 75px; float: left; text-align: center; margin-right: 5px;}
 #history .item img { display: block; margin: 0 auto;}
+#topbar h1, .loggedas, .login_link, .clearhistory { display: block; float: left;}
+.loggedas, .login_link, .clearhistory { height: 40px; line-height: 40px; margin-left: 50px;}
+.loggedas, .login_link { margin-left: 650px;}

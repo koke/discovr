@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100117183817) do
+ActiveRecord::Schema.define(:version => 20100118003807) do
 
   create_table "favorites", :force => true do |t|
     t.string   "nsid"
@@ -20,6 +20,14 @@ ActiveRecord::Schema.define(:version => 20100117183817) do
   end
 
   add_index "favorites", ["nsid", "photo_id"], :name => "index_favorites_on_nsid_and_photo_id", :unique => true
+
+  create_table "history_caches", :force => true do |t|
+    t.string   "cached_type", :null => false
+    t.string   "cached_id",   :null => false
+    t.text     "who"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "photo_caches", :force => true do |t|
     t.string   "photo_id"

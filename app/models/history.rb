@@ -12,7 +12,7 @@ class History
     @history.push(object) unless @history.last.eql?(object)
     if @history.size > @@max_size
       @history.shift
-    end    
+    end
   end
   
   def get

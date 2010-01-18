@@ -1,3 +1,3 @@
   <% photos.each do |photo| %>
-  <%= link_to(image_tag(photo.thumbnail, :alt => "", :class => "thumb"), :action => "photo", :id => photo.id) %>
+  <%= render :partial => 'photo_thumb', :locals => { :photo => photo } %>
   <% end %>

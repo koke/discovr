@@ -34,6 +34,15 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  def add_history(object)
+    if object.is_a?(Flickr::Photo)
+      HistoryCache.cache_photo(object, session[:nsid])
+    elsif object.is_a?(Flickr::User)
+      HistoryCache.cache_user(object, session[:nsid])      
+    end
+    @history.add(object)
+  end
+  
   def save_history
     session[:history] = @history.history
   end
