@@ -1,0 +1,16 @@
+@photos.each do |similar|
+  photo = @flickr.photo(similar.similar_id)
+  
+  page << "if ($('p#{photo.id}')) {"
+  page.remove "p#{photo.id}"
+  page.insert_html :top, 'favorites', :partial => 'photo_thumb', :locals => { :photo => photo }
+  page << "} else {"
+  page.insert_html :bottom, 'favorites', :partial => 'photo_thumb', :locals => { :photo => photo }
+  page << "}"
+end
+if @next
+  page << remote_function(:url => {:action => "similar", :id => @photo.id, :user_id => @next.nsid, },
+    :loading => "startLoading('#{@next.safe_nsid}')",
+    :success => "nsidLoaded('#{@next.safe_nsid}')",
+    :failure => "nsidFailed('#{@next.safe_nsid}')")
+end

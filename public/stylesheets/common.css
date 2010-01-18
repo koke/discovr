@@ -9,7 +9,10 @@ a, img { margin: 0; padding: 0; color: #fff; text-decoration: none; }
 #pictureshow a.selected img { border: 2px solid #f0f0f0;}
 .userlist { margin: 10px; float: left; width: 52px; }
 .userlist .selected .avatar { border-color: #ccf;}
-.userlist .loading { background: url(/images/loading.gif) no-repeat top left; width: 48px; height: 48px; position: absolute; z-index: 10; margin: 3px;}
+.userlist .loading .avatar { border-color: #333;}
+.userlist .loaded .avatar { border-color: #353;}
+.userlist .failure .avatar { border-color: #533;}
+.userlist .indicator { background: url(/images/loading.gif) no-repeat top left; width: 48px; height: 48px; position: absolute; z-index: 10; margin: 3px;}
 .favorites { display: block; float: left; margin: 10px; width: 640px;}
 .favorites a {margin-left: 5px;}
 #thetitle { display: block; }

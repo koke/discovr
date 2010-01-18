@@ -27,12 +27,24 @@ function setLoading (nsid) {
 	var user = $(nsid);
 	
 	user.insert({
-		top: "<div class='loading'></div>"
+		top: "<div class='indicator'></div>"
 	});
 }
 
 function endLoading(nsid) {
-	$$('#' + nsid + ' .loading').each(function(l) {
+	$$('#' + nsid + ' .indicator').each(function(l) {
 		l.remove();
 	});
+}
+
+function startLoading (nsid) {
+	$(nsid).className = 'loading';
+}
+
+function nsidLoaded(nsid) {
+	$(nsid).className = 'loaded';
+}
+
+function nsidFailed(nsid) {
+	$(nsid).className = 'failed';
 }

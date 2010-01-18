@@ -20,7 +20,25 @@ class DiscovrController < ApplicationController
     @photo = @flickr.photo(params[:id])
     @users = @photo.favorites
     @selected = @users.first
+    @similar = @photo.similar(@selected.nsid)
+    @next = @users.second
     @history.add(@photo)
+  end
+  
+  def similar
+    @photo = @flickr.photo(params[:id])
+    if params[:user_id]
+      @photos = @photo.similar(params[:user_id])
+      @users = @photo.favorites
+      current = @users.select {|u| u.nsid == params[:user_id]}
+      @next = @users.at(@users.index(current.first) + 1)
+    else
+      @photos = @photo.similar(@users.first.nsid)
+    end
+    respond_to do |wants|
+      wants.html { @history.add(@photo) }
+      wants.js
+    end
   end
   
   def user

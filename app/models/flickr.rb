@@ -82,6 +82,10 @@ class Flickr
   end
   
   def user(lookup)
+    user = UserCache.find_by_nsid(lookup)
+    if user
+      return User.new(self, user.nsid, user.username)
+    end
     user = people_getInfo('user_id'=>lookup)["person"] rescue nil
     user ||= people_findByUsername('username'=>lookup)['user'] rescue nil
     user ||= people_findByEmail('find_email'=>lookup)['user'] rescue nil
@@ -92,6 +96,16 @@ class Flickr
   end
   
   def photo(photo_id)
+    photo = PhotoCache.find_by_photo_id(photo_id)
+    if photo
+      options = {
+        'farm' => photo.farm,
+        'server' => photo.server,
+        'secret' => photo.secret,
+      }
+      return Photo.new(self, photo_id, options)
+    end
+    
     photo = photos_getInfo('photo_id'=>photo_id)["photo"]
     Photo.new(self, photo_id, photo)
   end
@@ -122,6 +136,13 @@ class Flickr
       end
     end
     
+    # Implements flickr.photos.getSizes
+    def sizes(size=nil)
+      sizes = @flickr.photos_getSizes('photo_id'=>@id)['sizes']['size']
+      sizes = sizes.find{|asize| asize['label']==size} if size
+      return sizes
+    end
+    
     def source(size='Medium')
       size_map = {
         'Square'    => '_s',
@@ -148,23 +169,68 @@ class Flickr
     end
     
     def favorites
+      faves = Favorite.find(:all, :conditions => ["photo_id = ?", @id])
+      if faves
+        return faves.map do |f|
+          User.new(@flickr, f.nsid, f.user.username)
+        end
+      end
       result = @flickr.photos_getFavorites('photo_id'=>@id)
       users = result['photo']['person']
       
       return [] unless users
 
       users = [users] unless users.kind_of?(Array)
-      faves = users.map { |user| User.new(@flickr, user['nsid'], user['username']) }
+      faves = []
+      
+      # Cache them
+      users.each do |user|
+        faves << User.new(@flickr, user['nsid'], user['username'])
+        UserCache.create_if_not_exists(:nsid => user['nsid'], :username => user['username'])
+        Favorite.create_if_not_exists(:nsid => user['nsid'], :photo_id => @id, :favorited_at => Time.at(user['favedate'].to_i))
+      end
       
       faves
+    end
+    
+    def similar(nsid)
+      similar = Similar.find(:all, :conditions => ["photo_id = ? AND proxy_user = ?", @id, nsid])
+      if similar.empty?
+        user = @flickr.user(nsid)
+        faves = user.favorites
+        faves.reject! {|f| f.id == @id}
+        faves.map do |fave|
+          Similar.create(:photo_id => @id, :proxy_user => nsid, :similar_id => fave.id)
+        end
+      else
+        similar
+      end
     end
     
     def eql?(photo)
       photo.is_a?(Photo) and @id.eql?(photo.id)
     end
     
+    def update_info
+      photo = @flickr.photos_getInfo('photo_id' => @id)['photo']
+      @server = photo['server']
+      @farm = photo['farm']
+      @secret = photo['secret']
+      @originalsecret = photo['originalsecret']
+      @originalformat = photo['originalformat']
+      if photo['owner'].is_a?(Hash)
+        @owner = photo['owner']['nsid']
+      else
+        @owner = photo['owner']
+      end
+    end
+    
+    def owner
+      update_info if @owner.nil?
+    end
+    
     def url
-      "http://flickr.com/photos/#{@owner}/#{@id}"
+      "http://flickr.com/photos/#{owner}/#{@id}"
     end
   end
   
@@ -235,10 +301,18 @@ class Flickr
       return [] unless photos
 
       photos = [photos] unless photos.kind_of?(Array)
-      faves = photos.to_a.reject{|photo| photo['id'].blank?}.map { |photo| Photo.new(@flickr,photo['id'], photo) };
+      faves = []
+      photos.to_a.reject{|photo| photo['id'].blank?}.map { |photo| Photo.new(@flickr,photo['id'], photo) };
+      # Cache them
+      photos.each do |photo|
+        next if photo['id'].blank?
+        
+        faves << Photo.new(@flickr, photo['id'], photo)
+        PhotoCache.create_if_not_exists(:photo_id => photo['id'], :farm => photo['farm'], :server => photo['server'], :secret => photo['secret'])
+        Favorite.create_if_not_exists(:nsid => @nsid, :photo_id => photo['id'], :favorited_at => Time.at(photo['date_faved'].to_i))
+      end
       
       faves
-      
     end
     
     def eql?(user)

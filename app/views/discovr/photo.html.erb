@@ -3,20 +3,41 @@
 </div>
 <div class="userlist">
   <div class="user similar">
-    <%= link_to(image_tag("/images/network.jpg", :alt => "Similar", :class => "avatar"), {:action => "similar", :id => @photo.id}, :title => "Similar pictures") %>
+    <%= link_to(image_tag("/images/network.jpg", :alt => "Similar", :class => "avatar"), {:action => "photo", :id => @photo.id}, :title => "Similar pictures", :class => "selected") %>
   </div>
+  <% javascript_tag do %>
+    var users = Array();
+  <% end %>
   <% @users.each do |user| %>
   <div class="user">
+    <% 
+    class_name = case user
+    when @selected
+      class_name = 'loaded'
+    when @next
+      class_name = 'loading'
+    else
+      class_name = ''
+    end
+     %>
     <%= link_to_remote(
             image_tag(user.avatar, :alt => user.username, :class => "avatar"),
             :url => {:action => "user", :id => user.nsid},
             :loading => "setLoading('#{user.safe_nsid}')",
             :complete => "endLoading('#{user.safe_nsid}')",
-            :html => {:title => user.username, :class => (@selected == user) ? "selected" : "", :id => "#{user.safe_nsid}"}
+            :html => {:title => user.username, :id => "#{user.safe_nsid}", :class => class_name}
             ) %>
   </div>
   <% end %>
 </div>
 <div class="favorites" id="favorites">
-<%= render :partial => 'user_favorites', :locals => {:photos => @selected.favorites} %>
+<%= render :partial => 'similar', :locals => { :similars => @similar } %>
+<% if @next %>
+<% javascript_tag do %>
+<%= remote_function :url => {:action => "similar", :id => @photo.id, :user_id => @next.nsid, },
+  :loading => "startLoading('#{@next.safe_nsid}')",
+  :success => "nsidLoaded('#{@next.safe_nsid}')",
+  :failure => "nsidFailed('#{@next.safe_nsid}')" %>
+<% end %>
+<% end %>
 </div>
