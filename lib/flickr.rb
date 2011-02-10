@@ -47,6 +47,7 @@
 require 'cgi'
 require 'net/http'
 require 'xmlsimple'
+require 'digest/md5'
 
 # Flickr client class. Requires an API key, and optionally takes an email and password for authentication
 class Flickr
@@ -90,6 +91,25 @@ class Flickr
     @password = password
     user = request('test.login')['user'] rescue fail
     @user = User.new(user['id'], @api_key)
+  end
+  
+  def signed_params(options)
+    secret = options.delete(:secret)
+    tosign = secret
+    tosign+= options.keys.map(&:to_s).sort.map {|k| "#{k}#{options[k.to_sym]}"}.join
+    puts "Flickr#signed_params tosign: #{tosign}" if FLICKR_DEBUG
+    options[:api_sig] = Digest::MD5.hexdigest(tosign)
+    
+    options.map{|k,v| "#{k}=#{v}"}.join("&")
+  end
+  
+  def auth_link(perms, secret)
+    url = "#{@host}/services/auth?"
+    url += signed_params(:secret => secret, :perms => perms, :api_key => @api_key)
+  end
+  
+  def auth_getToken(frob, secret)
+    
   end
   
   # Implements flickr.urls.lookupGroup and flickr.urls.lookupUser
@@ -227,7 +247,7 @@ class Flickr
     
     # Implements flickr.favorites.getPublicList and flickr.favorites.getList
     def favorites(min_fave_date=nil)
-      per_page = '50'
+      per_page = '200'
       result = @client.favorites_getPublicList('user_id'=>@id, 'page'=>'1', 'per_page'=>per_page, 'min_fave_date'=>min_fave_date.to_i.to_s)
       photos = result['photos']['photo']
       
